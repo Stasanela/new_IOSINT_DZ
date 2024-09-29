@@ -104,7 +104,7 @@ final class ProfileHeaderView: UITableViewHeaderFooterView {
         setStatusButton.addTarget(self, action: #selector(statusButtonPressed), for: .touchUpInside)
         addSubview(setStatusButton)
         setStatusButton.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(statusTextField.snp.bottom).offset(16)
+            make.top.equalTo(statusTextField.snp.bottom).offset(32)
             make.leading.equalTo(16)
             make.trailing.equalTo(-16)
             make.height.equalTo(48)

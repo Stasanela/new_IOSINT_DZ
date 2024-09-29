@@ -1,13 +1,12 @@
-//
-//  PostTableViewCell.swift
-//  Navigation
-//
 
 import UIKit
+import iOSIntPackage
 
 class PostTableViewCell: UITableViewCell {
     
     private var viewCounter = 0
+    private let imageProcessor = ImageProcessor()
+
 
     // MARK: Visual objects
     
@@ -25,6 +24,7 @@ class PostTableViewCell: UITableViewCell {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.backgroundColor = .black
         image.contentMode = .scaleAspectFill
+        image.clipsToBounds = true
         return image
     }()
 
@@ -45,7 +45,6 @@ class PostTableViewCell: UITableViewCell {
         return label
     }()
 
-
     var postViews: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -64,7 +63,7 @@ class PostTableViewCell: UITableViewCell {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("lol")
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupConstraints() {
@@ -92,19 +91,41 @@ class PostTableViewCell: UITableViewCell {
     }
 
     // MARK: - Run loop
-    
+   
     func configPostArray(post: Post) {
         postAuthor.text = post.author
         postDescription.text = post.description
-        postImage.image = UIImage(named: post.image)
         postLikes.text = "Likes: \(post.likes)"
         viewCounter = post.views
         postViews.text = "Views: \(viewCounter)"
+        
+        guard let image = UIImage(named: post.image) else {
+            return
+        }
+        
+        imageProcessor.processImageAsync(sourceImage: image, filter: .sepia(intensity: 1.0)) { [weak self] processedImage in
+            if let cgImage = processedImage {
+                DispatchQueue.main.async {
+                    self?.postImage.image = UIImage(cgImage: cgImage)
+                }
+            }
+        }
     }
     
     func incrementPostViewsCounter() {
         viewCounter += 1
         postViews.text = "Views: \(viewCounter)"
+    }
+    
+    // MARK: - ImageLibrarySubscriber Conformance
+    
+    func receive(images: [UIImage]) {
+
+        if let newImage = images.first {
+            DispatchQueue.main.async {
+                self.postImage.image = newImage
+            }
+        }
     }
 }
 
