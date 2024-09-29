@@ -68,7 +68,7 @@ extension ProfileViewController: UITableViewDataSource {
         return 2
     }
 }
-
+ 
 extension ProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
