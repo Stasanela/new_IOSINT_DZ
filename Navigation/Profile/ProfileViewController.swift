@@ -26,9 +26,6 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if let user = user {
-        }
 
         view.backgroundColor = .systemBackground
         

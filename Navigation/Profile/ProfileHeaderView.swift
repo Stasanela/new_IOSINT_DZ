@@ -38,6 +38,18 @@ class CurrentUserService: UserService {
     
 }
 
+class TestUserService: UserService {
+    private var testUser: User
+    
+    init() {
+        self.testUser = User(login: "testUser", fullName: "Test User", avatar: UIImage(named: "testAvatar")!, status: "Testing")
+    }
+    
+    func getUser(login: String) -> User? {
+        return login == testUser.login ? testUser : nil
+    }
+}
+
 
 final class ProfileHeaderView: UITableViewHeaderFooterView {
     

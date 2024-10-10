@@ -7,7 +7,12 @@ import UIKit
 
 final class LoginViewController: UIViewController {
     
-    let userService = CurrentUserService(user: User(login: "User123", fullName: "Teo West", avatar: UIImage(named: "teo")!, status: "Online"))
+#if DEBUG
+       var userService = TestUserService()
+       #else
+    var userService = CurrentUserService(user: User(login: "User123", fullName: "Teo West", avatar: UIImage(named: "teo")!, status: "Online"))
+       #endif
+
     
     // MARK: Visual content
     
