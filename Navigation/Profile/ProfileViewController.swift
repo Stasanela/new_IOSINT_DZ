@@ -7,6 +7,8 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    var user: User?
+    
     static let headerIdent = "header"
     static let photoIdent = "photo"
     static let postIdent = "post"
@@ -68,7 +70,7 @@ extension ProfileViewController: UITableViewDataSource {
         return 2
     }
 }
-
+ 
 extension ProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
