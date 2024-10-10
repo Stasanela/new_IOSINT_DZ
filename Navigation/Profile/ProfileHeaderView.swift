@@ -6,6 +6,38 @@
 import UIKit
 import SnapKit
 
+class User {
+    let login: String
+    let fullName: String
+    let avatar: UIImage
+    let status: String
+    
+    init(login: String, fullName: String, avatar: UIImage, status: String) {
+        self.login = login
+        self.fullName = fullName
+        self.avatar = avatar
+        self.status = status
+    }
+    
+}
+
+protocol UserService {
+    func getUser (login: String) -> User?
+}
+
+class CurrentUserService: UserService {
+    private var user: User
+
+    init(user: User) {
+        self.user = user
+    }
+    
+    func getUser(login: String) -> User? {
+        return login == user.login ? user : nil
+    }
+    
+}
+
 
 final class ProfileHeaderView: UITableViewHeaderFooterView {
     

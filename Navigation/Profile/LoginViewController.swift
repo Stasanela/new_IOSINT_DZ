@@ -7,6 +7,8 @@ import UIKit
 
 final class LoginViewController: UIViewController {
     
+    let userService = CurrentUserService(user: User(login: "User123", fullName: "Teo West", avatar: UIImage(named: "teo")!, status: "Online"))
+    
     // MARK: Visual content
     
     var loginScrollView: UIScrollView = {
@@ -169,10 +171,26 @@ final class LoginViewController: UIViewController {
     // MARK: - Event handlers
 
     @objc private func touchLoginButton() {
-        let profileVC = ProfileViewController()
-        navigationController?.setViewControllers([profileVC], animated: true)
+
+        guard let login = loginField.text, !login.isEmpty else {
+            showError("Please, enter a login")
+            return
+        }
+
+        if let user = userService.getUser(login: login) {
+            let profileVC = ProfileViewController()
+            profileVC.user = user  // Передаем пользователя в ProfileViewController
+            navigationController?.setViewControllers([profileVC], animated: true)
+        } else {
+            showError("Invalid login. Please, try again")
+        }
     }
 
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
     @objc private func keyboardShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             loginScrollView.contentOffset.y = keyboardSize.height - (loginScrollView.frame.height - loginButton.frame.minY)

@@ -7,6 +7,8 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    var user: User?
+    
     static let headerIdent = "header"
     static let photoIdent = "photo"
     static let postIdent = "post"
@@ -24,6 +26,9 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let user = user {
+        }
 
         view.backgroundColor = .systemBackground
         
