@@ -1,12 +1,18 @@
-//
-//  LoginViewController.swift
-//  Navigation
-//
-
+import Foundation
 import UIKit
 
 final class LoginViewController: UIViewController {
     
+#if DEBUG
+       var userService = TestUserService()
+#else
+    var userService = CurrentUserService(user: User(login: "User123", fullName: "Teo West", avatar: UIImage(named: "teo")!, status: "Online"))
+#endif
+    
+
+    weak var loginDelegate: LoginViewControllerDelegate?
+    
+
     // MARK: Visual content
     
     var loginScrollView: UIScrollView = {
@@ -46,133 +52,80 @@ final class LoginViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         
         if let pixel = UIImage(named: "blue_pixel") {
-            button.setBackgroundImage(pixel.image(alpha: 1), for: .normal)
-            button.setBackgroundImage(pixel.image(alpha: 0.8), for: .selected)
-            button.setBackgroundImage(pixel.image(alpha: 0.6), for: .highlighted)
-            button.setBackgroundImage(pixel.image(alpha: 0.4), for: .disabled)
+            button.setBackgroundImage(pixel, for: .normal)
         }
-
-        button.setTitle("Login", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(nil, action: #selector(touchLoginButton), for: .touchUpInside)
         button.layer.cornerRadius = LayoutConstants.cornerRadius
-        button.clipsToBounds = true
+        button.setTitle("Log In", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
         return button
     }()
     
     var loginField: UITextField = {
-        let login = UITextField()
-        login.translatesAutoresizingMaskIntoConstraints = false
-        login.placeholder = "Log In"
-        login.layer.borderColor = UIColor.lightGray.cgColor
-        login.layer.borderWidth = 0.25
-        login.leftViewMode = .always
-        login.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: login.frame.height))
-        login.keyboardType = .emailAddress
-        login.textColor = .black
-        login.font = UIFont.systemFont(ofSize: 16)
-        login.autocapitalizationType = .none
-        login.returnKeyType = .done
-        return login
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.cornerRadius = LayoutConstants.cornerRadius
+        textField.backgroundColor = .white
+        textField.placeholder = "Login"
+        return textField
     }()
     
     var passwordField: UITextField = {
-        let password = UITextField()
-        password.translatesAutoresizingMaskIntoConstraints = false
-        password.leftViewMode = .always
-        password.placeholder = "Password"
-        password.layer.borderColor = UIColor.lightGray.cgColor
-        password.layer.borderWidth = 0.25
-        password.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: password.frame.height))
-        password.isSecureTextEntry = true
-        password.textColor = .black
-        password.font = UIFont.systemFont(ofSize: 16)
-        password.autocapitalizationType = .none
-        password.returnKeyType = .done
-        return password
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.cornerRadius = LayoutConstants.cornerRadius
+        textField.backgroundColor = .white
+        textField.placeholder = "Password"
+        textField.isSecureTextEntry = true
+        return textField
     }()
     
-    // MARK: - Setup section
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemBackground
-        navigationController?.navigationBar.isHidden = true
-        
-        setupViews()
-    }
-    
-    private func setupViews() {
-        view.addSubview(loginScrollView)
-        loginScrollView.addSubview(contentView)
-        
-        contentView.addSubviews(vkLogo, loginStackView, loginButton)
-        
-        loginStackView.addArrangedSubview(loginField)
-        loginStackView.addArrangedSubview(passwordField)
-        
-        loginField.delegate = self
-        passwordField.delegate = self
-        
-        setupConstraints()
-    }
-
-    private func setupConstraints() {
-        NSLayoutConstraint.activate([
-
-            loginScrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            loginScrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            loginScrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            loginScrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-
-            contentView.topAnchor.constraint(equalTo: loginScrollView.topAnchor),
-            contentView.trailingAnchor.constraint(equalTo: loginScrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: loginScrollView.bottomAnchor),
-            contentView.leadingAnchor.constraint(equalTo: loginScrollView.leadingAnchor),
-            contentView.centerXAnchor.constraint(equalTo: loginScrollView.centerXAnchor),
-            contentView.centerYAnchor.constraint(equalTo: loginScrollView.centerYAnchor),
-
-            vkLogo.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 120),
-            vkLogo.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            vkLogo.heightAnchor.constraint(equalToConstant: 100),
-            vkLogo.widthAnchor.constraint(equalToConstant: 100),
-
-            loginStackView.topAnchor.constraint(equalTo: vkLogo.bottomAnchor, constant: 120),
-            loginStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: LayoutConstants.leadingMargin),
-            loginStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: LayoutConstants.trailingMargin),
-            loginStackView.heightAnchor.constraint(equalToConstant: 100),
-
-            loginButton.topAnchor.constraint(equalTo: loginStackView.bottomAnchor, constant: LayoutConstants.indent),
-            loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: LayoutConstants.leadingMargin),
-            loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: LayoutConstants.trailingMargin),
-            loginButton.heightAnchor.constraint(equalToConstant: 50),
-        ])
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        let nc = NotificationCenter.default
-        nc.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        nc.addObserver(self, selector: #selector(keyboardHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        let nc = NotificationCenter.default
-        nc.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        nc.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-
+        loginButton.addTarget(self, action: #selector(touchLoginButton), for: .touchUpInside)
     }
     
     // MARK: - Event handlers
 
     @objc private func touchLoginButton() {
-        let profileVC = ProfileViewController()
-        navigationController?.setViewControllers([profileVC], animated: true)
+
+        guard let login = loginField.text, !login.isEmpty else {
+            showError("Please, enter a login")
+            return
+        }
+
+        guard let password = passwordField.text, !password.isEmpty else {
+            showError("Please, enter a password")
+            return
+        }
+        
+
+        if loginDelegate?.check(login: login, password: password) == true {
+            if let user = userService.getUser(login: login) {
+                let profileVC = ProfileViewController()
+                profileVC.user = user  // Pass user to ProfileViewController
+                navigationController?.setViewControllers([profileVC], animated: true)
+            }
+        } else {
+            showError("Invalid login or password. Please, try again")
+        }
     }
 
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+
+    // MARK: - Keyboard handling
+    
     @objc private func keyboardShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             loginScrollView.contentOffset.y = keyboardSize.height - (loginScrollView.frame.height - loginButton.frame.minY)
@@ -195,3 +148,4 @@ extension LoginViewController: UITextFieldDelegate {
         return true
     }
 }
+
