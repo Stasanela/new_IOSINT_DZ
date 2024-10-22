@@ -10,7 +10,7 @@ final class LoginViewController: UIViewController {
 #endif
     
 
-    weak var loginDelegate: LoginViewControllerDelegate?
+     var loginDelegate: LoginViewControllerDelegate?
     
 
     // MARK: Visual content

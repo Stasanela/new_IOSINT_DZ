@@ -10,9 +10,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let loginVC = LoginViewController()
         
-        let loginInspector = LoginInspector()
-        loginVC.loginDelegate = loginInspector
-        
         let factory = MyLoginFactory()
         loginVC.loginDelegate = factory.makeLoginInspector()
 
